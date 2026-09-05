@@ -6,7 +6,7 @@ Authors: Hao Xu
 import Hsfnlean.Clique
 
 /-!
-# A tree decomposition of `F(N,m)` of width `N` (Lemma lem:tw-nec, upper bound)
+# A tree decomposition of `F(N,m)` of width `N` (Lemma lem:tw-nec)
 
 Paper: "A Mathematical Theory of the Hyper-Simplex Fractal Network" (R260409),
 Lemma `lem:tw-nec` (`tw(F(N,1)) = N-1`, `tw(F(N,m)) = N` for `m ≥ 2`; hence
@@ -20,35 +20,66 @@ reads:
 > property along the cell tree, giving a tree decomposition of width `N`
 > (bag size `N+1`).
 
-Mathlib carries no treewidth API to lean on, so this file formalizes the
-*upper bound half* concretely: the bag family is defined explicitly and the
-three tree-decomposition axioms — vertex covering, edge covering, and the
-running-intersection (coherence) condition — are stated for it, together with
-the width bound `|bag| ≤ N + 1`. The bags are exactly the anchored cliques of
-`Hsfnlean.Clique` (`bag w = anchored w`, of order `N + 1` at a non-leaf `w`)
-plus the root bag, the tier-`1` cell (`rootBag = tier1 N m`, of order `N`).
+## What this file is
 
-The index of the family is the cell tree: `none` names the tier-`1` cell and
-`some w` names the cell spawned at `w`, with `treeParent` the parent map that
-makes the index a tree (it strictly decreases the tier, `treeParent_tier_lt`).
+**Mathlib has no treewidth.** There is no `SimpleGraph.treewidth`, no
+`IsTreeDecomposition`, and no Helly theorem for subtrees of a tree to build one
+on. So this file *defines its own tree-decomposition predicate* — a bag family
+plus the four clauses (a) covering, (b) edge covering, (c) width, (d)
+running intersection along the index tree — and proves everything relative to
+it. Nothing here is stated in terms of an official `tw`, because there is none.
+
+The bag family: `bag w = anchored w` (the anchored clique of `Hsfnlean.Clique`,
+of order `N + 1` at a non-leaf `w`) and `rootBag = tier1 N m`, the tier-`1`
+cell, of order `N`. The index is the cell tree, `BagIdx = Option (Addr N m)`:
+`none` names the tier-`1` cell, `some w` the cell spawned at `w`, and
+`treeParent` is the parent map, which strictly decreases the tier
+(`treeParent_tier_lt`), so the index is a genuine rooted tree.
 `bag_inter_parent` / `rootBag_inter_bag` are the paper's "adjacent cells share
-exactly their common anchor node", and `coherence_idx` is the running-intersection
-property itself: the indices whose bag contains a fixed `v` are exactly the
-tree-adjacent pair `some v`, `treeParent v`.
+exactly their common anchor node". Clause (d) is `coherence_idx`: the indices
+whose bag contains a fixed `v` are *exactly* the tree-adjacent pair `some v`,
+`treeParent v`. `tw_le` packages (a)–(d) as one theorem.
 
-The width claims track the paper's two cases: `exists_card_bag_eq` shows that
-for `m ≥ 2` some bag really does have order `N + 1`, so `card_bag_le` is not
-vacuously loose and *this* decomposition has width exactly `N` (it does **not**
-show `tw(F(N,m)) ≥ N`, which is a statement about every decomposition and needs
-a treewidth API); `card_bagAt_le_of_m_one` shows every bag has order at most `N`
-when `m = 1`, which is the upper half of the paper's `tw(F(N,1)) = N-1`.
+## The four claims of `lem:tw-nec`, and which are covered
 
-The lower bounds `tw(F(N,m)) ≥ N` (from `K_{N+1} ⊆ F(N,m)`, Lemma
-`lem:maxclique` / `HSFN.cliqueNum_eq`) and `tw(F(N,1)) ≥ N-1`, and the
-minor-monotone transfer to a realized `H`, are **not** attempted here: all
-three need a treewidth API.
+1. **`tw(F(N,1)) ≤ N-1`** — covered. `card_bagAt_le_of_m_one`: at `m = 1` every
+   bag of the family has order at most `N`; `width_eq_of_m_one` states it with
+   the root bag attaining `N`. An upper bound on treewidth is witnessed by one
+   decomposition, and this is that decomposition, so the only gap is the
+   missing official definition of `tw`.
+2. **`tw(F(N,1)) ≥ N-1`** — covered *for decompositions of this file's shape*,
+   `width_ge_of_coherence_m_one`. Not covered for arbitrary tree
+   decompositions; see the caveat below.
+3. **`tw(F(N,m)) ≤ N` for `m ≥ 2`** — covered. `card_bagAt_le`, packaged in
+   `tw_le`; `exists_card_bag_eq` shows the bound is attained, so this
+   decomposition has width exactly `N` and clause (c) is not vacuously loose.
+4. **`tw(F(N,m)) ≥ N` for `m ≥ 2`** — covered *for decompositions of this
+   file's shape*, `width_ge_of_coherence`, via the clique-in-a-bag lemma
+   `clique_subset_bag_of_coherence`. Same caveat.
+
+The lemma's closing clause, `tw(H) ≤ N` for every realized `H`, is **not**
+attempted: it is monotonicity of treewidth under the realization quotient and
+has no counterpart without a treewidth API.
+
+**Caveat on 2 and 4.** The lower bounds are proved from the file's clauses
+(b) and (d) alone (`clique_subset_bag_of_coherence`: any bag family in which
+every vertex `v` lies in `B (par v)` and in no bag other than `B (own v)` and
+`B (par v)`, with `own` *injective* and `par` acyclic against a rank, must
+contain every clique of the graph inside a single bag — the standard argument,
+and it really does use the running-intersection clause). That quantifies over
+every decomposition in this *normal form*, in which a vertex occurs in at most
+two bags, each vertex owns a private index, and the parent map descends a rank.
+The normal form is therefore genuinely narrower than "a vertex occupies at most
+two bags": it also excludes, for instance, the one-bag decomposition, since
+`own` cannot be injective into a singleton index. A general tree
+decomposition lets a vertex occur in an arbitrary connected set of bags, and
+the corresponding clique-in-a-bag lemma needs the Helly property for subtrees
+of a tree, which mathlib does not have. So 2 and 4 are honest lower bounds over
+a restricted class of decompositions, not over all of them. The graph-side
+ingredient is complete and unrestricted: `F(N,m)` contains `K_{N+1}` for
+`m ≥ 2` and `F(N,1)` is `K_N` (`HSFN.cliqueNum_eq`, `isClique_rootBag`,
+`card_rootBag`).
 -/
-
 namespace HSFN
 
 namespace TreeDecomp
@@ -295,8 +326,10 @@ theorem card_bagAt_le (i : BagIdx N m) : (bagAt i).card ≤ N + 1 := by
 /-- The width bound `N` is attained by this decomposition when `m ≥ 2`, so
 `card_bag_le` is not vacuously loose: some bag really has `N + 1` elements.
 (Together with `HSFN.cliqueNum_eq` this is why the paper's `tw(F(N,m)) = N` for
-`m ≥ 2` cannot be improved; the lower bound itself needs a treewidth API and is
-not claimed here.) -/
+`m ≥ 2` cannot be improved. The matching lower bound is `width_ge_of_coherence`
+below, which holds only for decompositions in this file's normal form; over
+*all* tree decompositions it would need a treewidth API and is not claimed
+anywhere in this file.) -/
 theorem exists_card_bag_eq (hN : 1 ≤ N) (hm : 2 ≤ m) :
     ∃ w : Addr N m, (bag w).card = N + 1 := by
   let z : Addr N m := ⟨[⟨0, hN⟩], by simp, by
@@ -462,6 +495,153 @@ theorem tw_le (N m : ℕ) (hm : 1 ≤ m) :
     fun i v h => coherence_idx i v h, fun v => mem_bagAt_some_self v,
     fun v => mem_bagAt_treeParent v,
     fun w w' h => treeParent_tier_lt w w' h⟩
+
+/-! ## (e) A clique lies in one bag, and the width lower bound
+
+The clauses (a)–(d) above are the tree-decomposition predicate of this file.
+This section proves, *from those clauses alone*, the standard fact that a
+clique of the host graph is contained in a single bag, and reads the width
+lower bound off it: since `F(N,m)` carries a clique of order `N + 1` for
+`m ≥ 2` (Lemma `lem:maxclique`, `HSFN.cliqueNum_eq`), every such decomposition
+has a bag of order at least `N + 1`, i.e. width at least `N`.
+-/
+
+section Abstract
+
+variable {V ι : Type*} {G : SimpleGraph V}
+
+/-- **A clique lies in one bag.** Let `B : ι → Finset V` be a family of bags
+indexed by a rooted tree in the normal form of clause (d): each vertex `v`
+carries its own index `own v` and the index `par v` of its parent bag, `v` lies
+in `B (par v)`, and `v` lies in *no* bag other than those two (`hcoh`, the
+running-intersection clause `coherence_idx`); the parent edge strictly
+decreases a rank, so the index is acyclic (`hacyclic`, `treeParent_tier_lt`);
+and every edge of `G` is covered by some bag (`hedge`, clause (b)). Then every
+nonempty clique of `G` is contained in a single bag.
+
+The proof is the usual "deepest vertex" argument: take `v ∈ K` of maximal rank
+and show `K ⊆ B (par v)`. For `u ∈ K`, `u ≠ v`, edge covering puts `u, v` in a
+common bag `B i`; coherence forces `i = own v` or `i = par v`. In the first
+case coherence for `u` gives `own v = own u` (impossible, `own` is injective)
+or `par u = own v`, which by acyclicity makes `v` shallower than `u`,
+contradicting maximality. So `i = par v`.
+
+Note that the running-intersection clause is what does the work: covering and
+edge covering alone do not imply the conclusion. -/
+theorem clique_subset_bag_of_coherence
+    (B : ι → Finset V) (own par : V → ι) (rk : V → ℕ)
+    (hown : Function.Injective own)
+    (hpar_mem : ∀ v : V, v ∈ B (par v))
+    (hcoh : ∀ (i : ι) (v : V), v ∈ B i → i = own v ∨ i = par v)
+    (hacyclic : ∀ u v : V, par u = own v → rk v < rk u)
+    (hedge : ∀ u v : V, G.Adj u v → ∃ i : ι, u ∈ B i ∧ v ∈ B i)
+    {K : Finset V} (hK : G.IsClique (K : Set V)) (hne : K.Nonempty) :
+    ∃ i : ι, K ⊆ B i := by
+  obtain ⟨v, hvK, hvmax⟩ := Finset.exists_max_image K rk hne
+  refine ⟨par v, fun u hu => ?_⟩
+  by_cases huv : u = v
+  · subst huv
+    exact hpar_mem u
+  · have hadj : G.Adj u v := hK (Finset.mem_coe.mpr hu) (Finset.mem_coe.mpr hvK) huv
+    obtain ⟨i, hui, hvi⟩ := hedge u v hadj
+    rcases hcoh i v hvi with rfl | rfl
+    · rcases hcoh (own v) u hui with h1 | h1
+      · exact absurd (hown h1).symm huv
+      · have hlt := hacyclic u v h1.symm
+        have hle := hvmax u hu
+        omega
+    · exact hui
+
+end Abstract
+
+/-- **A clique of `F(N,m)` lies in one bag of this decomposition.** The
+instance of `clique_subset_bag_of_coherence` for the bag family of this file:
+`own = some`, `par = treeParent`, rank `= tier`, with `mem_bagAt_treeParent`,
+`coherence_idx`, `treeParent_tier_lt` and `edge_cover_idx` discharging the
+hypotheses. -/
+theorem clique_subset_bagAt {K : Finset (Addr N m)}
+    (hK : (graph N m).IsClique (K : Set (Addr N m))) (hne : K.Nonempty) :
+    ∃ i : BagIdx N m, K ⊆ bagAt i :=
+  clique_subset_bag_of_coherence (G := graph N m) bagAt some treeParent Addr.tier
+    (Option.some_injective _) mem_bagAt_treeParent coherence_idx
+    (fun u v h => treeParent_tier_lt u v h) (fun _ _ h => edge_cover_idx h) hK hne
+
+/-- **Width lower bound, `m ≥ 2`.** *Every* bag family satisfying the
+tree-decomposition clauses of this file (edge covering plus the
+running-intersection normal form of clause (d)) has a bag of order at least
+`N + 1`, so its width is at least `N`. The clique it must swallow is the
+anchored clique exhibited by `exists_card_bag_eq`, a clique by `isClique_bag`
+and of order `N + 1` by `card_bag_of_lt`; this is the graph-side ingredient of
+Lemma `lem:maxclique` (`HSFN.cliqueNum_eq`).
+
+Together with `card_bagAt_le` (every bag has order at most `N + 1`) this is the
+paper's `tw(F(N,m)) = N` for `m ≥ 2`, for decompositions of this shape. -/
+theorem width_ge_of_coherence {ι : Type*} (B : ι → Finset (Addr N m))
+    (own par : Addr N m → ι) (rk : Addr N m → ℕ)
+    (hown : Function.Injective own)
+    (hpar_mem : ∀ v : Addr N m, v ∈ B (par v))
+    (hcoh : ∀ (i : ι) (v : Addr N m), v ∈ B i → i = own v ∨ i = par v)
+    (hacyclic : ∀ u v : Addr N m, par u = own v → rk v < rk u)
+    (hedge : ∀ u v : Addr N m, (graph N m).Adj u v → ∃ i : ι, u ∈ B i ∧ v ∈ B i)
+    (hN : 1 ≤ N) (hm : 2 ≤ m) :
+    ∃ i : ι, N + 1 ≤ (B i).card := by
+  obtain ⟨w, hw⟩ := exists_card_bag_eq (N := N) (m := m) hN hm
+  obtain ⟨i, hsub⟩ :=
+    clique_subset_bag_of_coherence (G := graph N m) B own par rk hown hpar_mem hcoh
+      hacyclic hedge (isClique_bag w) ⟨w, mem_bag_self w⟩
+  exact ⟨i, hw ▸ Finset.card_le_card hsub⟩
+
+/-- **Width of this decomposition, `m ≥ 2`: exactly `N`.** Every bag has order
+at most `N + 1` (`card_bagAt_le`) and some bag has order exactly `N + 1`
+(`exists_card_bag_eq`); by `width_ge_of_coherence` no decomposition of this
+shape does better. This is the paper's `tw(F(N,m)) = N` for `m ≥ 2`. -/
+theorem width_eq (hN : 1 ≤ N) (hm : 2 ≤ m) :
+    (∀ i : BagIdx N m, (bagAt i).card ≤ N + 1) ∧
+      ∃ i : BagIdx N m, (bagAt i).card = N + 1 := by
+  refine ⟨fun i => card_bagAt_le i, ?_⟩
+  obtain ⟨w, hw⟩ := exists_card_bag_eq (N := N) (m := m) hN hm
+  exact ⟨some w, hw⟩
+
+/-! ## (f) The case `m = 1`: width exactly `N - 1` -/
+
+/-- At `m = 1` the tier-`1` cell is nonempty (it is all of `F(N,1)`). -/
+theorem rootBag_nonempty_of_m_one (hN : 1 ≤ N) : (rootBag N 1).Nonempty := by
+  refine ⟨⟨[⟨0, hN⟩], by simp, by simp only [List.length_cons, List.length_nil]; omega⟩, ?_⟩
+  refine (mem_rootBag_iff _).mpr ?_
+  show ([(⟨0, hN⟩ : Fin N)] : List (Fin N)).length = 1
+  simp
+
+/-- **Width lower bound, `m = 1`.** `F(N,1)` is the single tier-`1` cell, a
+clique of order `N` (`isClique_rootBag`, `card_rootBag`), so every bag family
+satisfying the tree-decomposition clauses of this file has a bag of order at
+least `N`: width at least `N - 1`. -/
+theorem width_ge_of_coherence_m_one {ι : Type*} (B : ι → Finset (Addr N 1))
+    (own par : Addr N 1 → ι) (rk : Addr N 1 → ℕ)
+    (hown : Function.Injective own)
+    (hpar_mem : ∀ v : Addr N 1, v ∈ B (par v))
+    (hcoh : ∀ (i : ι) (v : Addr N 1), v ∈ B i → i = own v ∨ i = par v)
+    (hacyclic : ∀ u v : Addr N 1, par u = own v → rk v < rk u)
+    (hedge : ∀ u v : Addr N 1, (graph N 1).Adj u v → ∃ i : ι, u ∈ B i ∧ v ∈ B i)
+    (hN : 1 ≤ N) :
+    ∃ i : ι, N ≤ (B i).card := by
+  obtain ⟨i, hsub⟩ :=
+    clique_subset_bag_of_coherence (G := graph N 1) B own par rk hown hpar_mem hcoh
+      hacyclic hedge (isClique_rootBag N 1) (rootBag_nonempty_of_m_one hN)
+  refine ⟨i, ?_⟩
+  have hcard := Finset.card_le_card hsub
+  rwa [card_rootBag N 1 le_rfl] at hcard
+
+/-- **Lemma `lem:tw-nec`, the case `m = 1`: `tw(F(N,1)) = N - 1`.** Stated
+subtraction-free as a two-sided bound on the bag orders. Upper half: every bag
+of this decomposition has order at most `N` (`card_bagAt_le_of_m_one`), and the
+root bag attains `N`, so this decomposition has width exactly `N - 1`. Lower
+half: `width_ge_of_coherence_m_one` shows no decomposition of this shape has
+all bags of order `< N`, because `F(N,1)` is itself the clique `K_N`. -/
+theorem width_eq_of_m_one :
+    (∀ i : BagIdx N 1, (bagAt i).card ≤ N) ∧
+      ∃ i : BagIdx N 1, (bagAt i).card = N := by
+  refine ⟨fun i => card_bagAt_le_of_m_one i, ⟨none, ?_⟩⟩
+  exact card_rootBag N 1 le_rfl
 
 end TreeDecomp
 

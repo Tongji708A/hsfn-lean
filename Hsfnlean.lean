@@ -10,6 +10,7 @@ import Hsfnlean.CutVertex
 import Hsfnlean.Degree
 import Hsfnlean.Delay
 import Hsfnlean.Dense
+import Hsfnlean.DenseCard
 import Hsfnlean.DenseUpdate
 import Hsfnlean.Derived
 import Hsfnlean.Distance
