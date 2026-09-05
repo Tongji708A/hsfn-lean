@@ -1,0 +1,9 @@
+.lake/
+*.olean
+*.ilean
+*.c
+*.log
+*.aux
+*.out
+*.pdf
+*.synctex.gz
