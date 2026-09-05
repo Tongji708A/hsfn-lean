@@ -6,3 +6,10 @@ import Hsfnlean.Update
 import Hsfnlean.Family
 import Hsfnlean.Clique
 import Hsfnlean.CutVertex
+import Hsfnlean.Threshold
+import Hsfnlean.ThresholdMono
+import Hsfnlean.Relabel
+import Hsfnlean.Greedy
+import Hsfnlean.Dense
+import Hsfnlean.MaxClique
+import Hsfnlean.TreeEmbed
