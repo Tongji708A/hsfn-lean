@@ -10,8 +10,8 @@
 'HSFN.Addr.card_eq_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.Addr.card_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.Addr.card_tier' depends on axioms: [propext, Classical.choice, Quot.sound]
-'HSFN.Sib' does not depend on any axioms
-'HSFN.Par' does not depend on any axioms
+'HSFN.Sib.symm' does not depend on any axioms
+'HSFN.Par.symm' does not depend on any axioms
 'HSFN.par_iff_concat' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.adj_tier' does not depend on any axioms
 'HSFN.Calc.seed_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -100,7 +100,7 @@
 'HSFN.adj_desc_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.exists_outside' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.not_reachable_of_desc' depends on axioms: [propext, Classical.choice, Quot.sound]
-'HSFN.Par' does not depend on any axioms
+'HSFN.Par.ne' depends on axioms: [propext, Quot.sound]
 'HSFN.mem_neighborFinset_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.neighborFinset_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.disj_sib_par' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -150,7 +150,7 @@
 'HSFN.DenseCard.card_CNode' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.DenseCard.card_CNode_eq_V_div' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.DenseUpdate.aux_valid_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
-'HSFN.DenseUpdate.DNode' does not depend on any axioms
+'HSFN.DenseUpdate.DNode.ext' does not depend on any axioms
 'HSFN.DenseUpdate.toSigma_injective' does not depend on any axioms
 'HSFN.DenseUpdate.dfsD_eq_childList' depends on axioms: [propext, Quot.sound]
 'HSFN.DenseUpdate.valid_append_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -175,15 +175,15 @@
 'HSFN.Calc.ne_nil_of_swapIncomp' does not depend on any axioms
 'HSFN.Calc.swapW_append_left' depends on axioms: [propext, Quot.sound]
 'HSFN.Calc.swapW_append_right' depends on axioms: [propext, Quot.sound]
-'HSFN.Calc.swapW' depends on axioms: [propext, Quot.sound]
-'HSFN.Calc.swapW' depends on axioms: [propext, Quot.sound]
-'HSFN.Calc.swapW' depends on axioms: [propext, Quot.sound]
-'HSFN.Calc.swapW' depends on axioms: [propext, Quot.sound]
+'HSFN.Calc.swapWμ_append_left' depends on axioms: [propext, Quot.sound]
+'HSFN.Calc.swapWμ_append_right' depends on axioms: [propext, Quot.sound]
+'HSFN.Calc.swapWμ_anchor_left' depends on axioms: [propext, Quot.sound]
+'HSFN.Calc.swapWμ_anchor_right' depends on axioms: [propext, Quot.sound]
 'HSFN.Calc.swapW_of_not_prefix' depends on axioms: [propext, Quot.sound]
-'HSFN.Calc.swapW' depends on axioms: [propext, Quot.sound]
+'HSFN.Calc.swapWμ_of_not_prefix' depends on axioms: [propext, Quot.sound]
 'HSFN.Calc.swapW_append_staging' depends on axioms: [propext, Quot.sound]
 'HSFN.Calc.swapW_involutive' depends on axioms: [propext, Quot.sound]
-'HSFN.Calc.swapW' depends on axioms: [propext, Quot.sound]
+'HSFN.Calc.swapWμ_involutive' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.Calc.swap_three_grafts' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.Calc.swap_two_grafts' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.Calc.swap_cone_exchange' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -199,7 +199,7 @@
 'HSFN.le_lcp_of_take_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.lcp_eq_length_iff_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
 'HSFN.getElem_lcp_ne' depends on axioms: [propext, Quot.sound]
-'HSFN.PrefixComp' does not depend on any axioms
+'HSFN.PrefixComp.comm' does not depend on any axioms
 'HSFN.dval_self' depends on axioms: [propext, Quot.sound]
 'HSFN.dval_comm' depends on axioms: [propext, Quot.sound]
 'HSFN.prefixComp_iff_lcp' depends on axioms: [propext, Classical.choice, Quot.sound]
