@@ -1,7 +1,8 @@
 # hsfn-lean
 
 Lean 4 formalization of the combinatorial core of the paper
-**A Mathematical Theory of the Hyper-Simplex Fractal Network** (HSFN).
+**The Hyper-Simplex Fractal Network as Space, Protocol and Dynamical System** (HSFN;
+earlier title *A Mathematical Theory of the Hyper-Simplex Fractal Network*).
 
 The hyper-simplex fractal network is a self-similar peer-to-peer topology in which every
 node spawns a half-scale clique of `N` offspring anchored to itself. Its nodes are the
@@ -31,9 +32,13 @@ adjacency law taken as the definition of the graph `HSFN.graph N m` on `HSFN.Add
 | `Hsfnlean/Threshold.lean` | Thm. depth-uniform reliability threshold (items 2–3), Cor. dense root correction | `f_b(x) = 1-(1-q)S_b(x)`; union bound `1-S_b(x) ≤ C(b,k)x^k`; for `2^k C(b,k) q^{k-1} < 1` (equivalently `q < q_0`) the interval `[q,2q]` is invariant and every iterate from `q` stays below `2q`; for `q > 1 - C(b,⌊b/2⌋+1)^{-1}`, `f_b(x) > x` on `[0,1)`; root correction `q + C(N,⌈N/2⌉)(2q)^{⌈N/2⌉}` |
 | `Hsfnlean/ThresholdMono.lean` | Thm. depth-uniform reliability threshold (item 1) | `S_b` is nonincreasing on `[0,1]` (derivative identity), `f_b` nondecreasing, iterates from `q` nondecreasing and bounded |
 | `Hsfnlean/Dense.lean` | Thm. dense counts, Prop. consensus tree (4), Prop. message proxy | facet and vertex counts of the dense variant in closed form, divisibility by `N`, level counts, `(N+1)V` proxy |
+| `Hsfnlean/ExecCount.lean` | Prop. executed message count | one fault-free round as a finite type of point-to-point messages (pre-prepare, prepare, commit, `s` report and `s` dissemination senders); messages are determined by kind, sender and receiver; exact count `|Msg| + 2sN = 2(N-1)V + 2sV`; the hop charged to each message equals its graph distance in `G_II`, and the link total is `2(N-1)V + 2s(2N-1)(V/N-1)` |
+| `Hsfnlean/PhysRecursion.lean` | Prop. failure recursion on the physical graph | the physical level map `g_N`; the binomial-tail shift `P[Bin(N-j,x) ≤ r-j] ≤ P[Bin(N,x) ≤ r]`; `f_N ≤ g_N` on `[0,1]`; `g_N` maps `[0,1]` into itself and is nondecreasing; `f_N^[k](q) ≤ g_N^[k](q)` at every depth |
 
 `AxiomCheck.lean` prints the axioms of every main theorem; each uses only
-`propext`, `Classical.choice` and `Quot.sound`. The recorded output is in `AXIOMS_*.txt`.
+`propext`, `Classical.choice` and `Quot.sound`. The recorded output is in `AXIOMS_*.txt` (latest `AXIOMS_260924.txt`: 831 statements).
+The table lists the original core modules and the two added on 2026-09-24; the remaining
+modules are described in `FORMALIZATION_REPORT_v5.md`.
 
 ## Build
 

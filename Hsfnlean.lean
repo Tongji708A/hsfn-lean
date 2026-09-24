@@ -39,3 +39,5 @@ import Hsfnlean.TierLocator
 import Hsfnlean.TreeDecomp
 import Hsfnlean.TreeEmbed
 import Hsfnlean.Update
+import Hsfnlean.ExecCount
+import Hsfnlean.PhysRecursion
